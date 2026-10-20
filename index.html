@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Wichteln</title>
+<style>
+  :root {
+    --bg: #f6f1e9; --card: #fffdf9; --ink: #2b2420; --muted: #7a6e66;
+    --accent: #b3322b; --accent-ink: #fff; --line: #e6dccf; --ok: #2f6b4a; --err: #a33;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17140f; --card: #221e18; --ink: #f1e9df; --muted: #a59a8e;
+      --accent: #d9534a; --accent-ink: #fff; --line: #3a332a; --ok: #7cc49b; --err: #f08a80;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh; display: grid; place-items: center; padding: 24px 16px;
+    background: var(--bg); color: var(--ink);
+    font: 17px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main {
+    width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 32px 24px; text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+  }
+  .star { font-size: 40px; line-height: 1; color: var(--accent); }
+  h1 { font-size: 26px; margin: 10px 0 4px; letter-spacing: -.01em; }
+  p.lead { margin: 0 0 24px; color: var(--muted); }
+  label { display: block; text-align: left; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+  input {
+    width: 100%; font: inherit; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button {
+    width: 100%; margin-top: 12px; font: inherit; font-weight: 600; padding: 12px;
+    border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); cursor: pointer;
+  }
+  button:disabled { opacity: .6; cursor: wait; }
+  .msg { min-height: 1.5em; margin-top: 12px; font-size: 15px; color: var(--err); }
+  #result { display: none; }
+  #result .hi { color: var(--muted); margin: 0; }
+  #result .name { font-size: 34px; font-weight: 700; margin: 6px 0 18px; color: var(--accent); }
+  #result small { color: var(--muted); display: block; }
+  #again { background: transparent; color: var(--muted); border: 1px solid var(--line); margin-top: 22px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="star" aria-hidden="true">✦</div>
+  <h1>Wichteln</h1>
+
+  <form id="form" autocomplete="off">
+    <p class="lead">Gib deinen persönlichen Code ein, um zu sehen, wen du beschenkst.</p>
+    <label for="code">Dein Code</label>
+    <input id="code" name="code" placeholder="z. B. wort-wort-wort" autocapitalize="none" spellcheck="false" required>
+    <button id="go" type="submit">Auflösen</button>
+    <div class="msg" id="msg" role="status"></div>
+  </form>
+
+  <section id="result" aria-live="polite">
+    <p class="hi" id="hi"></p>
+    <p class="hi">du beschenkst</p>
+    <div class="name" id="target"></div>
+    <small>Psst – nicht verraten!</small>
+    <button id="again" type="button">Schließen</button>
+  </section>
+</main>
+
+<script>
+const DATA = {"iter": 600000, "entries": [{"s": "JPLTQfD+D4EFkFLSVbSFJw==", "iv": "8v4QdKJFznD6iZzb", "ct": "r2VpARHge11ebJigz84q0qZoqXxct7Mr8afEKOspU+WQjnx/TC7omw+YuIGv1/JVNqWq"}, {"s": "eE7L0b/LFdMMszR4IH/x+Q==", "iv": "EQtgF8HchZCSiDUN", "ct": "gxYUPmMxwb5J7ML0nii71SUaTHFnrNrhLYyR/zl21skRtv03hADB7v7agrcH6Ur2EKsNg6w="}, {"s": "WtY+sQCpb/e7rabAsyYinw==", "iv": "4LQAEk5s/mY5IWxo", "ct": "vYriQIqTyIE/xj1rEdis3TRzQKpMS3i1HA4wPqHqxTGt4W9PsV3N+0fP5GjBddP3riT7O+Y="}, {"s": "rySqGMDrpRcRHXg+ylXcVQ==", "iv": "01kDq/J4ivhN+5DW", "ct": "IV8lIXuDeJautOfFC3wdzdfoekTir3tfTFH2f5RuXBdqWpqz9H8HjIRPOTuwjxdD0A=="}, {"s": "S8QVEgMoOolls4U+oUuzjg==", "iv": "7+rrRai+i3Y/KlJb", "ct": "wmsQarfz/P+c/SEQRoabZeUeqwO6B971KI41OOcYE6p7/NjU5eQfCpTITbcP6s3zCA=="}, {"s": "dzwxEwDmN4G3rHektLzElQ==", "iv": "kYsrQuuuTfb48M5y", "ct": "Y30+kZcfQFK0H6FwSdIbX1RN7q4TyCe+aEj3WWP81Q5xwWuTyViq66R/SW83u2kiLe0PcLQR"}, {"s": "iLHViFgA10DhOkgJ1YgEuQ==", "iv": "n3a3x7tF7TSiBdVy", "ct": "5UTEGFRX2DkyzciBdEKElGnmYLKeObnYZmWhDqR5X7gigpSah94ydif9t6Jn+upsIyBFKyQ="}, {"s": "9SS6+31Zemg0OZ59c9YXaA==", "iv": "M5vwGx65fhPq0eoD", "ct": "dqFMUlSsHcb2IS+8aEFrd61KHvEwEqgbbze3fWaFHdlBeTgRkz7jqaSCOvVIxXs2+HExng=="}]};
+
+const $ = id => document.getElementById(id);
+const b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+function normalize(s) {
+  return s.trim().toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+    .replace(/[\s_.,]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+}
+
+async function tryEntry(code, e) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: b(e.s), iterations: DATA.iter, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b(e.iv) }, key, b(e.ct));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { return null; }
+}
+
+async function reveal(raw) {
+  const code = normalize(raw);
+  for (const e of DATA.entries) {
+    const r = await tryEntry(code, e);
+    if (r) return r;
+  }
+  return null;
+}
+
+$("form").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  if (!window.crypto || !crypto.subtle) {
+    $("msg").textContent = "Dein Browser unterstützt das leider nicht. Bitte die Seite über https öffnen.";
+    return;
+  }
+  $("go").disabled = true; $("msg").textContent = ""; $("go").textContent = "Einen Moment …";
+  const r = await reveal($("code").value);
+  $("go").disabled = false; $("go").textContent = "Auflösen";
+  if (!r) { $("msg").textContent = "Dieser Code passt leider nicht. Bitte nochmal prüfen."; return; }
+  $("hi").textContent = "Hallo " + r.von + ",";
+  $("target").textContent = r.fuer;
+  $("form").style.display = "none"; $("result").style.display = "block";
+});
+
+$("again").addEventListener("click", () => {
+  $("code").value = ""; $("target").textContent = ""; $("hi").textContent = "";
+  $("result").style.display = "none"; $("form").style.display = "block";
+});
+</script>
+</body>
+</html>
